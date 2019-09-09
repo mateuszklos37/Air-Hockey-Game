@@ -10,6 +10,8 @@ import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import javafx.scene.paint.Color;
 import javafx.scene.image.Image;
+import java.util.Timer;
+import java.util.TimerTask;
 import javafx.stage.StageStyle;
 
 
@@ -20,7 +22,12 @@ public class AirHockey extends Application {
     private Image puck = new Image("graphics/Puck.png");
 
     public static void main (String[] args){
-        launch(args);
+        Timer timer = new Timer();
+        for (int i =0; i<10; i++){
+
+            System.out.println("That's message");
+        }
+//        launch(args);
     }
 
     @Override
