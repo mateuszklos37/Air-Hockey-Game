@@ -1,14 +1,9 @@
 package com.kodilla;
 import javafx.animation.KeyFrame;
-import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
-import javafx.geometry.Insets;
-import javafx.geometry.Orientation;
-import javafx.geometry.Pos;
-import javafx.scene.Group;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.layout.*;
@@ -16,7 +11,6 @@ import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
 import javafx.scene.paint.Color;
 import javafx.scene.image.Image;
-import javafx.stage.StageStyle;
 import javafx.util.Duration;
 
 
@@ -54,14 +48,15 @@ public class AirHockey extends Application {
         //movement of roller
         Timeline timeline = new Timeline(new KeyFrame(Duration.millis(20),
                 new EventHandler<ActionEvent>() {
-                    double dx = 1.2;
-                    double dy = 1.8;
-
+                    double rollerdx = 1.2;
+                    double rollerdy = 1.8;
+                    double paddlesdx = 1.5;
                     @Override
                     public void handle(ActionEvent t) {
                     //move roller
-                        roller.setLayoutX(roller.getLayoutX()+dx);
-                        roller.setLayoutY(roller.getLayoutY()+dy);
+                        roller.setLayoutX(roller.getLayoutX() + rollerdx);
+                        roller.setLayoutY(roller.getLayoutY() + rollerdy);
+                        computersPaddle.setLayoutX(computersPaddle.getLayoutX() + paddlesdx);
 
                         //bounds
                         Bounds bounds = grid.getBoundsInLocal();
@@ -69,12 +64,17 @@ public class AirHockey extends Application {
                         //2 x if - if roller hits the bounds reverse it's velocity direction
                         if(roller.getLayoutX() >= (bounds.getMaxX()-roller.getRadius()-16)
                                 || roller.getLayoutX() <= (bounds.getMinX() + roller.getRadius()+16)){
-                            dx = -dx;
+                            rollerdx = -rollerdx;
+                        }
+
+                        if(computersPaddle.getLayoutX() >= (bounds.getMaxX()-computersPaddle.getRadius()-16)
+                                || computersPaddle.getLayoutX() <= (bounds.getMinX() + computersPaddle.getRadius()+16)){
+                            paddlesdx = - paddlesdx;
                         }
 
                         if(roller.getLayoutY() >= (bounds.getMaxY()-roller.getRadius()-16)
                                 || roller.getLayoutY() <= (bounds.getMinY() + roller.getRadius()+16)){
-                            dy = -dy;
+                            rollerdy = -rollerdy;
                         }
                     }
                 }));
