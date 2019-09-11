@@ -8,10 +8,13 @@ import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.layout.*;
 import javafx.scene.shape.Circle;
+import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import javafx.scene.paint.Color;
 import javafx.scene.image.Image;
 import javafx.util.Duration;
+
+import java.util.Random;
 
 
 public class AirHockey extends Application {
@@ -29,11 +32,11 @@ public class AirHockey extends Application {
         Background background = new Background(backgroundImage);
         //roller, users and computers paddles
         Circle roller = new Circle(10, Color.ORANGE);
-        roller.relocate(145, 215);
-        Circle usersPaddle = new Circle(15, Color.DARKBLUE);
-        usersPaddle.relocate(145, 380);
-        Circle computersPaddle = new Circle(15, Color.GREENYELLOW);
-        computersPaddle.relocate(145, 50);
+        roller.relocate(145, 100);
+        Rectangle usersPaddle = new Rectangle(60, 5, Color.INDIANRED);
+        usersPaddle.relocate(125, 375);
+        Rectangle computersPaddle = new Rectangle(60, 5, Color.GREENYELLOW);
+        computersPaddle.relocate(125, 70);
         Pane grid = new Pane();
         grid.setBackground(background);
         grid.getChildren().add(computersPaddle);
@@ -48,9 +51,9 @@ public class AirHockey extends Application {
         //movement of roller
         Timeline timeline = new Timeline(new KeyFrame(Duration.millis(20),
                 new EventHandler<ActionEvent>() {
-                    double rollerdx = 1.2;
-                    double rollerdy = 1.8;
-                    double paddlesdx = 1.5;
+                    double rollerdx = 2.5;
+                    double rollerdy = 2.8;
+                    double paddlesdx = 2.0;
                     @Override
                     public void handle(ActionEvent t) {
                     //move roller
@@ -60,24 +63,45 @@ public class AirHockey extends Application {
 
                         //bounds
                         Bounds bounds = grid.getBoundsInLocal();
-
+                        int frame = 16;
                         //2 x if - if roller hits the bounds reverse it's velocity direction
-                        if(roller.getLayoutX() >= (bounds.getMaxX()-roller.getRadius()-16)
-                                || roller.getLayoutX() <= (bounds.getMinX() + roller.getRadius()+16)){
+                        if(roller.getLayoutX() >= (bounds.getMaxX()-roller.getRadius()-frame)
+                                || roller.getLayoutX() <= (bounds.getMinX() + roller.getRadius()+frame)){
                             rollerdx = -rollerdx;
                         }
-
-                        if(computersPaddle.getLayoutX() >= (bounds.getMaxX()-computersPaddle.getRadius()-16)
-                                || computersPaddle.getLayoutX() <= (bounds.getMinX() + computersPaddle.getRadius()+16)){
-                            paddlesdx = - paddlesdx;
-                        }
-
-                        if(roller.getLayoutY() >= (bounds.getMaxY()-roller.getRadius()-16)
-                                || roller.getLayoutY() <= (bounds.getMinY() + roller.getRadius()+16)){
+                        if(roller.getLayoutY() >= (bounds.getMaxY()-roller.getRadius()-frame-300)
+                                || roller.getLayoutY() <= (bounds.getMinY() + roller.getRadius()+frame)){
                             rollerdy = -rollerdy;
                         }
+
+                        if(computersPaddle.getLayoutX() >= (bounds.getMaxX()-computersPaddle.getWidth()-frame)
+                                || computersPaddle.getLayoutX() <= (bounds.getMinX() + frame)){
+//                            Random generator = new Random();
+//                            int generated = generator.nextInt(100);
+//                            System.out.println("Bouncing property: " + generated);
+//                            if(generated<95)
+//                                paddlesdx = -paddlesdx;
+//                            else
+//                                paddlesdx = -paddlesdx + 0.01*generated;
+                            paddlesdx = -paddlesdx;
+                        }
+                        //roller bouncing paddle: dy
+                        if((roller.getLayoutY() - roller.getRadius() <= computersPaddle.getLayoutY() + computersPaddle.getHeight())
+                        && (roller.getLayoutX() <= computersPaddle.getLayoutX() + computersPaddle.getWidth())
+                        && (roller.getLayoutX() >= computersPaddle.getLayoutX())
+                        && (roller.getLayoutY() + roller.getRadius() >= computersPaddle.getLayoutY())){
+                                rollerdy = -rollerdy;
+                        }
+                        //roller bouncing paddle: dx
+                        if((roller.getLayoutY() >= computersPaddle.getLayoutY() + computersPaddle.getHeight())
+                                && (roller.getLayoutX() - roller.getRadius() <= computersPaddle.getLayoutX() + computersPaddle.getWidth())
+                                && (roller.getLayoutX() + roller.getRadius() >= computersPaddle.getLayoutX())
+                                && (roller.getLayoutY() <= computersPaddle.getLayoutY())){
+                            rollerdx = -rollerdx;
+                        }
                     }
-                }));
+                }
+        ));
         timeline.setCycleCount(timeline.INDEFINITE);
         timeline.play();
     }
