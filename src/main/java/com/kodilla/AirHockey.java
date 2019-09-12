@@ -32,10 +32,10 @@ public class AirHockey extends Application {
         Background background = new Background(backgroundImage);
         //roller, users and computers paddles
         Circle roller = new Circle(10, Color.ORANGE);
-        roller.relocate(145, 100);
-        Rectangle usersPaddle = new Rectangle(60, 5, Color.INDIANRED);
+        roller.relocate(145, 200);
+        Rectangle usersPaddle = new Rectangle(60, 10, Color.INDIANRED);
         usersPaddle.relocate(125, 375);
-        Rectangle computersPaddle = new Rectangle(60, 5, Color.GREENYELLOW);
+        Rectangle computersPaddle = new Rectangle(60, 10, Color.GREENYELLOW);
         computersPaddle.relocate(125, 70);
         Pane grid = new Pane();
         grid.setBackground(background);
@@ -51,9 +51,9 @@ public class AirHockey extends Application {
         //movement of roller
         Timeline timeline = new Timeline(new KeyFrame(Duration.millis(20),
                 new EventHandler<ActionEvent>() {
-                    double rollerdx = 2.5;
-                    double rollerdy = 2.8;
-                    double paddlesdx = 2.0;
+                    double rollerdx = 4.5;
+                    double rollerdy = 4.8;
+                    double paddlesdx = 2.5;
                     @Override
                     public void handle(ActionEvent t) {
                     //move roller
@@ -69,7 +69,7 @@ public class AirHockey extends Application {
                                 || roller.getLayoutX() <= (bounds.getMinX() + roller.getRadius()+frame)){
                             rollerdx = -rollerdx;
                         }
-                        if(roller.getLayoutY() >= (bounds.getMaxY()-roller.getRadius()-frame-300)
+                        if(roller.getLayoutY() >= (bounds.getMaxY()-roller.getRadius()-frame-200)
                                 || roller.getLayoutY() <= (bounds.getMinY() + roller.getRadius()+frame)){
                             rollerdy = -rollerdy;
                         }
@@ -93,10 +93,10 @@ public class AirHockey extends Application {
                                 rollerdy = -rollerdy;
                         }
                         //roller bouncing paddle: dx
-                        if((roller.getLayoutY() >= computersPaddle.getLayoutY() + computersPaddle.getHeight())
+                        if((roller.getLayoutY() >= computersPaddle.getLayoutY())
+                                && (roller.getLayoutY() <= computersPaddle.getLayoutY() + computersPaddle.getHeight())
                                 && (roller.getLayoutX() - roller.getRadius() <= computersPaddle.getLayoutX() + computersPaddle.getWidth())
-                                && (roller.getLayoutX() + roller.getRadius() >= computersPaddle.getLayoutX())
-                                && (roller.getLayoutY() <= computersPaddle.getLayoutY())){
+                                && (roller.getLayoutX() + roller.getRadius() >= computersPaddle.getLayoutX())){
                             rollerdx = -rollerdx;
                         }
                     }
