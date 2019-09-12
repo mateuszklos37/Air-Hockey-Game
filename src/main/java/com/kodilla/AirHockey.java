@@ -6,6 +6,7 @@ import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
 import javafx.application.Application;
 import javafx.scene.Scene;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.*;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
@@ -48,6 +49,28 @@ public class AirHockey extends Application {
         primaryStage.setTitle("Air Hockey");
         primaryStage.setScene(scene);
         primaryStage.show();
+        scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
+            double usersPaddledx;
+            Bounds bounds = grid.getBoundsInLocal();
+            int frame = 16;
+            @Override
+            public void handle(KeyEvent event) {
+                switch(event.getCode()){
+                    case LEFT:
+                        usersPaddledx = -1.3;
+                        usersPaddle.setLayoutX(usersPaddle.getLayoutX() + usersPaddledx);
+//                        if(usersPaddle.getLayoutX() <= bounds.getMinX() + frame){
+//                            usersPaddledx = 0;
+//                        }
+                    case RIGHT:
+                        usersPaddledx = 1.0;
+                        usersPaddle.setLayoutX(usersPaddle.getLayoutX() + usersPaddledx);
+//                        if(usersPaddle.getLayoutX() + usersPaddle.getWidth() >= bounds.getMaxX() - frame){
+//                            usersPaddledx = 0;
+//                        }
+                }
+            }
+        });
         //movement of roller
         Timeline timeline = new Timeline(new KeyFrame(Duration.millis(20),
                 new EventHandler<ActionEvent>() {
