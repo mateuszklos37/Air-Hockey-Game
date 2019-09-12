@@ -56,18 +56,20 @@ public class AirHockey extends Application {
             @Override
             public void handle(KeyEvent event) {
                 switch(event.getCode()){
-                    case LEFT:
-                        usersPaddledx = -1.3;
-                        usersPaddle.setLayoutX(usersPaddle.getLayoutX() + usersPaddledx);
-//                        if(usersPaddle.getLayoutX() <= bounds.getMinX() + frame){
-//                            usersPaddledx = 0;
-//                        }
-                    case RIGHT:
-                        usersPaddledx = 1.0;
-                        usersPaddle.setLayoutX(usersPaddle.getLayoutX() + usersPaddledx);
-//                        if(usersPaddle.getLayoutX() + usersPaddle.getWidth() >= bounds.getMaxX() - frame){
-//                            usersPaddledx = 0;
-//                        }
+                    case LEFT: {
+                        if(usersPaddle.getLayoutX() > bounds.getMinX() + frame) {
+                            usersPaddledx = -3.0;
+                            usersPaddle.setLayoutX(usersPaddle.getLayoutX() + usersPaddledx);
+                            break;
+                        }
+                    }
+                    case RIGHT: {
+                        if(usersPaddle.getLayoutX() + usersPaddle.getWidth() < bounds.getMaxX() - frame) {
+                            usersPaddledx = 3.0;
+                            usersPaddle.setLayoutX(usersPaddle.getLayoutX() + usersPaddledx);
+                        }
+                        break;
+                    }
                 }
             }
         });
@@ -92,7 +94,7 @@ public class AirHockey extends Application {
                                 || roller.getLayoutX() <= (bounds.getMinX() + roller.getRadius()+frame)){
                             rollerdx = -rollerdx;
                         }
-                        if(roller.getLayoutY() >= (bounds.getMaxY()-roller.getRadius()-frame-200)
+                        if(roller.getLayoutY() >= (bounds.getMaxY()-roller.getRadius()-frame)
                                 || roller.getLayoutY() <= (bounds.getMinY() + roller.getRadius()+frame)){
                             rollerdy = -rollerdy;
                         }
@@ -120,6 +122,20 @@ public class AirHockey extends Application {
                                 && (roller.getLayoutY() <= computersPaddle.getLayoutY() + computersPaddle.getHeight())
                                 && (roller.getLayoutX() - roller.getRadius() <= computersPaddle.getLayoutX() + computersPaddle.getWidth())
                                 && (roller.getLayoutX() + roller.getRadius() >= computersPaddle.getLayoutX())){
+                            rollerdx = -rollerdx;
+                        }
+                        //roller bouncing users paddle: dy
+                        if((roller.getLayoutY() - roller.getRadius() <= usersPaddle.getLayoutY() + usersPaddle.getHeight())
+                                && (roller.getLayoutX() <= usersPaddle.getLayoutX() + usersPaddle.getWidth())
+                                && (roller.getLayoutX() >= usersPaddle.getLayoutX())
+                                && (roller.getLayoutY() + roller.getRadius() >= usersPaddle.getLayoutY())){
+                            rollerdy = -rollerdy;
+                        }
+                        //roller bouncing paddle: dx
+                        if((roller.getLayoutY() >= usersPaddle.getLayoutY())
+                                && (roller.getLayoutY() <= usersPaddle.getLayoutY() + usersPaddle.getHeight())
+                                && (roller.getLayoutX() - roller.getRadius() <= usersPaddle.getLayoutX() + usersPaddle.getWidth())
+                                && (roller.getLayoutX() + roller.getRadius() >= usersPaddle.getLayoutX())){
                             rollerdx = -rollerdx;
                         }
                     }
