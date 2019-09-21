@@ -181,8 +181,5 @@ public class AirHockey extends Application {
         ));
         timeline.setCycleCount(timeline.INDEFINITE);
         timeline.play();
-        if(player.getNumberOfScoredGoals() > 3 || computer.getNumberOfScoredGoals() >3) {
-            timeline.stop();
-        }
     }
 }
