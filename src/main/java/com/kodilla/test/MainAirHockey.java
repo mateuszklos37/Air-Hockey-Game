@@ -14,7 +14,6 @@ public class MainAirHockey extends Application {
         Pane grid = new Pane();
         GameManager gameManager = new GameManager(primaryStage, grid);
         gameManager.drawScene();
-        gameManager.usersPaddleMotion();
         gameManager.rollerAndComputerMotion(grid);
     }
 }
