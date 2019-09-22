@@ -33,6 +33,10 @@ public class ComputersPaddle {
         return scoredGoals;
     }
 
+    public int setNumberOfScoredGoals(int numberOfScoredGoals){
+        return scoredGoals = numberOfScoredGoals;
+    }
+
     public double getDx() {
         return dx;
     }

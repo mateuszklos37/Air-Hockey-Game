@@ -8,12 +8,15 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
 import javafx.scene.Scene;
+import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
@@ -59,10 +62,18 @@ public class GameManager {
         Timeline timeline = new Timeline(new KeyFrame(Duration.millis(20),
                 new EventHandler<ActionEvent>() {
                     boolean isRunning = FALSE;
+                    boolean computerScoredGoal = FALSE;
+                    boolean userScoredGoal = FALSE;
+                    boolean userWon = FALSE;
+                    boolean computerWon = FALSE;
+                    boolean endOfGame = FALSE;
+                    TextDrawer labelComputerScored = new TextDrawer("Computer scored a goal");
+                    TextDrawer labelUserScored = new TextDrawer("You scored a goal");
+                    TextDrawer labelGameOver = new TextDrawer("Computer won! Press escape to exit window");
+                    TextDrawer labelYouWon = new TextDrawer("Congratulations, You won! Press escape to exit window");
                     double rollerdx = 0;
                     double rollerdy = 0;
                     double paddlesdx = 0;
-
                     int frame = 16;
                     @Override
                     public void handle(ActionEvent t) {
@@ -78,6 +89,29 @@ public class GameManager {
                                     rollerdy = 1.8;
                                     paddlesdx = 2.0;
                                     System.out.println(isRunning);
+                                }
+                            }
+                            case ENTER: {
+                                if (computerScoredGoal == TRUE) {
+                                    roller.circle.setLayoutX(155);
+                                    roller.circle.setLayoutY(225);
+                                    usersPaddle.rectangle.setLayoutX(125);
+                                    computersPaddle.rectangle.setLayoutX(125);
+                                    grid.getChildren().remove(labelComputerScored.label);
+                                    computerScoredGoal = FALSE;
+                                }
+                                else if (userScoredGoal == TRUE) {
+                                    roller.circle.setLayoutX(155);
+                                    roller.circle.setLayoutY(225);
+                                    usersPaddle.rectangle.setLayoutX(125);
+                                    computersPaddle.rectangle.setLayoutX(125);
+                                    grid.getChildren().remove(labelUserScored.label);
+                                    userScoredGoal = FALSE;
+                                }
+                            }
+                            case ESCAPE: {
+                                if (endOfGame) {
+                                    primaryStage.close();
                                 }
                             }
                             case LEFT: {
@@ -160,15 +194,20 @@ public class GameManager {
 //                                    goalLabel.setText("You scored a goal!");
 //                                    goalLabel.relocate(150, 200);
 //                                    grid.getChildren().add(goalLabel);
-                            usersPaddle.scoresGoal();
-                            usersPaddle.rectangle.setLayoutX(125);
-                            roller.circle.setLayoutX(155);
-                            roller.circle.setLayoutY(225);
-                            computersPaddle.rectangle.setLayoutX(125);
                             rollerdx = 0;
                             rollerdy = 0;
                             paddlesdx = 0;
+                            roller.circle.setLayoutY(roller.circle.getLayoutY()+3);
                             isRunning = FALSE;
+                            usersPaddle.scoresGoal();
+                            userScoredGoal = TRUE;
+                            if(userScoredGoal == TRUE && usersPaddle.getNumberOfScoredGoals()<3){
+                                    labelUserScored.label.relocate(105, 150);
+                                    grid.getChildren().add(labelUserScored.label);
+                            }
+                            if (userScoredGoal && usersPaddle.getNumberOfScoredGoals() == 3 ){
+                                userWon = TRUE;
+                            }
                             System.out.println("Player scored a goal!");
                             System.out.println("Result of the game: Player: " + usersPaddle.getNumberOfScoredGoals() + " vs. computer: " + computersPaddle.getNumberOfScoredGoals());
                         }
@@ -177,19 +216,35 @@ public class GameManager {
                                 && roller.circle.getLayoutX() <= usersGoal.rectangle.getLayoutX() + usersGoal.rectangle.getWidth()
                                 && roller.circle.getLayoutY() + roller.circle.getRadius() >= bounds.getMaxY() - frame) {
                             computersPaddle.scoresGoal();
-                            usersPaddle.rectangle.setLayoutX(125);
-                            roller.circle.setLayoutX(155);
-                            roller.circle.setLayoutY(225);
-                            computersPaddle.rectangle.setLayoutX(125);
                             rollerdx = 0;
                             rollerdy = 0;
                             paddlesdx = 0;
+                            roller.circle.setLayoutY(roller.circle.getLayoutY()-3);
                             isRunning = FALSE;
+                            computerScoredGoal = TRUE;
+                            if(computerScoredGoal == TRUE && computersPaddle.getNumberOfScoredGoals()<3){
+                                    labelComputerScored.label.relocate(105, 150);
+                                    grid.getChildren().add(labelComputerScored.label);
+                            }
+                            if (computerScoredGoal && computersPaddle.getNumberOfScoredGoals() == 3 ){
+                                computerWon = TRUE;
+                            }
                             System.out.println("Computer scored a goal!");
                             System.out.println("Result of the game: Player: " + usersPaddle.getNumberOfScoredGoals() + " vs. computer: " + computersPaddle.getNumberOfScoredGoals());
                         }
-                        if (usersPaddle.getNumberOfScoredGoals() > 3 || computersPaddle.getNumberOfScoredGoals() > 3){
-                            primaryStage.close();
+
+                        if (computerWon){
+                            labelGameOver.label.relocate(60, 150);
+                            grid.getChildren().add(labelGameOver.label);
+                            computerWon = FALSE;
+                            endOfGame = TRUE;
+                        }
+
+                        if(userWon){
+                            labelYouWon.label.relocate(60,150);
+                            grid.getChildren().add(labelYouWon.label);
+                            userWon = FALSE;
+                            endOfGame = TRUE;
                         }
                     }
                 }

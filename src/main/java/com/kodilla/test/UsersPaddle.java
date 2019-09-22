@@ -32,6 +32,10 @@ public class UsersPaddle {
         return scoredGoals;
     }
 
+    public int setNumberOfScoredGoals(int numberOfScoredGoals){
+        return scoredGoals = numberOfScoredGoals;
+    }
+
     public double setDx(double dx){
             return this.dx = dx;
     }
