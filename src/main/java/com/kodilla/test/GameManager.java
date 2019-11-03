@@ -1,24 +1,19 @@
 package com.kodilla.test;
 
-import com.kodilla.Computer;
-import com.kodilla.Player;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
-import javafx.scene.shape.Rectangle;
-import javafx.scene.text.Font;
-import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+
+import java.util.Random;
 
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
@@ -67,6 +62,8 @@ public class GameManager {
                     boolean userWon = FALSE;
                     boolean computerWon = FALSE;
                     boolean endOfGame = FALSE;
+                    boolean computerBounceAble;
+                    boolean userBounceAble;
                     TextDrawer labelComputerScored = new TextDrawer("Computer scored a goal");
                     TextDrawer labelUserScored = new TextDrawer("You scored a goal");
                     TextDrawer labelGameOver = new TextDrawer("Computer won! Press escape to exit window");
@@ -74,45 +71,51 @@ public class GameManager {
                     double rollerdx = 0;
                     double rollerdy = 0;
                     double paddlesdx = 0;
+                    Random velGenerator = new Random();
                     int frame = 16;
                     @Override
                     public void handle(ActionEvent t) {
-                        //move roller
                         scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
-                        int e;
                         @Override
                         public void handle(KeyEvent event) {
                         switch(event.getCode()){
                             case SPACE: {
                                 if (isRunning == FALSE) {
-                                    rollerdx = 2.5;
-                                    rollerdy = 1.8;
-                                    paddlesdx = 2.0;
-                                    System.out.println(isRunning);
+                                    if(!endOfGame) {
+                                        rollerdx = ((velGenerator.nextDouble()) * 2) + 2;
+                                        rollerdy = ((velGenerator.nextDouble()) * 2) + 2;
+                                        paddlesdx = ((velGenerator.nextDouble()) * 2) + 2;
+                                        computerBounceAble = TRUE;
+                                        userBounceAble = TRUE;
+                                        System.out.println(isRunning);
+                                    }
                                 }
                             }
                             case ENTER: {
-                                if (computerScoredGoal == TRUE) {
-                                    roller.circle.setLayoutX(155);
-                                    roller.circle.setLayoutY(225);
-                                    usersPaddle.rectangle.setLayoutX(125);
-                                    computersPaddle.rectangle.setLayoutX(125);
-                                    grid.getChildren().remove(labelComputerScored.label);
-                                    computerScoredGoal = FALSE;
+                                if(!endOfGame) {
+                                    if (computerScoredGoal == TRUE) {
+                                        roller.circle.setLayoutX(155);
+                                        roller.circle.setLayoutY(225);
+                                        usersPaddle.rectangle.setLayoutX(125);
+                                        computersPaddle.rectangle.setLayoutX(125);
+                                        grid.getChildren().remove(labelComputerScored.label);
+                                        computerScoredGoal = FALSE;
+                                    } else if (userScoredGoal == TRUE) {
+                                        roller.circle.setLayoutX(155);
+                                        roller.circle.setLayoutY(225);
+                                        usersPaddle.rectangle.setLayoutX(125);
+                                        computersPaddle.rectangle.setLayoutX(125);
+                                        grid.getChildren().remove(labelUserScored.label);
+                                        userScoredGoal = FALSE;
+                                    }
                                 }
-                                else if (userScoredGoal == TRUE) {
-                                    roller.circle.setLayoutX(155);
-                                    roller.circle.setLayoutY(225);
-                                    usersPaddle.rectangle.setLayoutX(125);
-                                    computersPaddle.rectangle.setLayoutX(125);
-                                    grid.getChildren().remove(labelUserScored.label);
-                                    userScoredGoal = FALSE;
-                                }
+                                break;
                             }
                             case ESCAPE: {
                                 if (endOfGame) {
                                     primaryStage.close();
                                 }
+                                break;
                             }
                             case LEFT: {
                                 if(usersPaddle.rectangle.getLayoutX() > bounds.getMinX() + frame) {
@@ -142,58 +145,64 @@ public class GameManager {
                         if (roller.circle.getLayoutX() >= (bounds.getMaxX() - roller.circle.getRadius() - frame)
                                 || roller.circle.getLayoutX() <= (bounds.getMinX() + roller.circle.getRadius() + frame)) {
                             rollerdx = -rollerdx;
+                            computerBounceAble = TRUE;
+                            userBounceAble = TRUE;
                         }
                         if (roller.circle.getLayoutY() >= (bounds.getMaxY() - roller.circle.getRadius() - frame)
                                 || roller.circle.getLayoutY() <= (bounds.getMinY() + roller.circle.getRadius() + frame)) {
                             rollerdy = -rollerdy;
+                            computerBounceAble = TRUE;
+                            userBounceAble = TRUE;
                         }
 
                         if (computersPaddle.rectangle.getLayoutX() >= (bounds.getMaxX() - computersPaddle.rectangle.getWidth() - frame)
                                 || computersPaddle.rectangle.getLayoutX() <= (bounds.getMinX() + frame)) {
-//                            Random generator = new Random();
-//                            int generated = generator.nextInt(100);
-//                            System.out.println("Bouncing property: " + generated);
-//                            if(generated<95)
-//                                paddlesdx = -paddlesdx;
-//                            else
-//                                paddlesdx = -paddlesdx + 0.01*generated;
                             paddlesdx = -paddlesdx;
                         }
                         //roller bouncing paddle: dy
-                        if ((roller.circle.getLayoutY() - roller.circle.getRadius() <= computersPaddle.rectangle.getLayoutY() + computersPaddle.rectangle.getHeight())
-                                && (roller.circle.getLayoutX() <= computersPaddle.rectangle.getLayoutX() + computersPaddle.rectangle.getWidth())
-                                && (roller.circle.getLayoutX() >= computersPaddle.rectangle.getLayoutX())
-                                && (roller.circle.getLayoutY() + roller.circle.getRadius() >= computersPaddle.rectangle.getLayoutY())) {
-                            rollerdy = -rollerdy;
+                        if(computerBounceAble) {
+                            if ((roller.circle.getLayoutY() - roller.circle.getRadius() <= computersPaddle.rectangle.getLayoutY() + computersPaddle.rectangle.getHeight())
+                                    && ((roller.circle.getLayoutX() - (roller.circle.getRadius() / 2)) <= computersPaddle.rectangle.getLayoutX() + computersPaddle.rectangle.getWidth())
+                                    && ((roller.circle.getLayoutX() + (roller.circle.getRadius() / 2)) >= computersPaddle.rectangle.getLayoutX())
+                                    && ((roller.circle.getLayoutY() + roller.circle.getRadius()) >= computersPaddle.rectangle.getLayoutY())) {
+                                rollerdy = -rollerdy;
+                                computerBounceAble = FALSE;
+                                userBounceAble = TRUE;
+                            }
+                            //roller bouncing paddle: dx
+                            if ((roller.circle.getLayoutY() + (roller.circle.getRadius() / 2) >= computersPaddle.rectangle.getLayoutY())
+                                    && (roller.circle.getLayoutY() - (roller.circle.getRadius() / 2) <= computersPaddle.rectangle.getLayoutY() + computersPaddle.rectangle.getHeight())
+                                    && (roller.circle.getLayoutX() - roller.circle.getRadius() <= computersPaddle.rectangle.getLayoutX() + computersPaddle.rectangle.getWidth())
+                                    && (roller.circle.getLayoutX() + roller.circle.getRadius() >= computersPaddle.rectangle.getLayoutX())) {
+                                rollerdx = -rollerdx;
+                                computerBounceAble = FALSE;
+                                userBounceAble = TRUE;
+                            }
                         }
-                        //roller bouncing paddle: dx
-                        if ((roller.circle.getLayoutY() + (roller.circle.getRadius() / 2) >= computersPaddle.rectangle.getLayoutY())
-                                && (roller.circle.getLayoutY() - (roller.circle.getRadius() / 2) <= computersPaddle.rectangle.getLayoutY() + computersPaddle.rectangle.getHeight())
-                                && (roller.circle.getLayoutX() - roller.circle.getRadius() <= computersPaddle.rectangle.getLayoutX() + computersPaddle.rectangle.getWidth())
-                                && (roller.circle.getLayoutX() + roller.circle.getRadius() >= computersPaddle.rectangle.getLayoutX())) {
-                            rollerdx = -rollerdx;
-                        }
-                        //roller bouncing users paddle: dy
-                        if ((roller.circle.getLayoutY() - roller.circle.getRadius() <= usersPaddle.rectangle.getLayoutY() + usersPaddle.rectangle.getHeight())
-                                && (roller.circle.getLayoutX() <= usersPaddle.rectangle.getLayoutX() + usersPaddle.rectangle.getWidth())
-                                && (roller.circle.getLayoutX() >= usersPaddle.rectangle.getLayoutX())
-                                && (roller.circle.getLayoutY() + roller.circle.getRadius() >= usersPaddle.rectangle.getLayoutY())) {
-                            rollerdy = -rollerdy;
-                        }
-                        //roller bouncing paddle: dx
-                        if ((roller.circle.getLayoutY() + (roller.circle.getRadius() / 2) >= usersPaddle.rectangle.getLayoutY())
-                                && (roller.circle.getLayoutY() - (roller.circle.getRadius() / 2) <= usersPaddle.rectangle.getLayoutY() + usersPaddle.rectangle.getHeight())
-                                && (roller.circle.getLayoutX() - roller.circle.getRadius() <= usersPaddle.rectangle.getLayoutX() + usersPaddle.rectangle.getWidth())
-                                && (roller.circle.getLayoutX() + roller.circle.getRadius() >= usersPaddle.rectangle.getLayoutX())) {
-                            rollerdx = -rollerdx;
+                        if(userBounceAble){
+                            //roller bouncing users paddle: dy
+                            if ((roller.circle.getLayoutY() - roller.circle.getRadius() <= usersPaddle.rectangle.getLayoutY() + usersPaddle.rectangle.getHeight())
+                                    && ((roller.circle.getLayoutX() - (roller.circle.getRadius() / 2)) <= usersPaddle.rectangle.getLayoutX() + usersPaddle.rectangle.getWidth())
+                                    && ((roller.circle.getLayoutX() + (roller.circle.getRadius() / 2)) >= usersPaddle.rectangle.getLayoutX())
+                                    && ((roller.circle.getLayoutY() + roller.circle.getRadius()) >= usersPaddle.rectangle.getLayoutY())) {
+                                rollerdy = -rollerdy;
+                                userBounceAble = FALSE;
+                                computerBounceAble = TRUE;
+                            }
+                            //roller bouncing paddle: dx
+                            if ((roller.circle.getLayoutY() + (roller.circle.getRadius() / 2) >= usersPaddle.rectangle.getLayoutY())
+                                    && (roller.circle.getLayoutY() - (roller.circle.getRadius() / 2) <= usersPaddle.rectangle.getLayoutY() + usersPaddle.rectangle.getHeight())
+                                    && (roller.circle.getLayoutX() - roller.circle.getRadius() <= usersPaddle.rectangle.getLayoutX() + usersPaddle.rectangle.getWidth())
+                                    && (roller.circle.getLayoutX() + roller.circle.getRadius() >= usersPaddle.rectangle.getLayoutX())) {
+                                rollerdx = -rollerdx;
+                                userBounceAble = FALSE;
+                                computerBounceAble = TRUE;
+                            }
                         }
                         //scoring a goal by player event
                         if (roller.circle.getLayoutX() >= computersGoal.rectangle.getLayoutX()
                                 && roller.circle.getLayoutX() <= computersGoal.rectangle.getLayoutX() + computersGoal.rectangle.getWidth()
                                 && roller.circle.getLayoutY() - roller.circle.getRadius() <= bounds.getMinY() + frame) {
-//                                    goalLabel.setText("You scored a goal!");
-//                                    goalLabel.relocate(150, 200);
-//                                    grid.getChildren().add(goalLabel);
                             rollerdx = 0;
                             rollerdy = 0;
                             paddlesdx = 0;
@@ -215,11 +224,11 @@ public class GameManager {
                         if (roller.circle.getLayoutX() >= usersGoal.rectangle.getLayoutX()
                                 && roller.circle.getLayoutX() <= usersGoal.rectangle.getLayoutX() + usersGoal.rectangle.getWidth()
                                 && roller.circle.getLayoutY() + roller.circle.getRadius() >= bounds.getMaxY() - frame) {
-                            computersPaddle.scoresGoal();
                             rollerdx = 0;
                             rollerdy = 0;
                             paddlesdx = 0;
                             roller.circle.setLayoutY(roller.circle.getLayoutY()-3);
+                            computersPaddle.scoresGoal();
                             isRunning = FALSE;
                             computerScoredGoal = TRUE;
                             if(computerScoredGoal == TRUE && computersPaddle.getNumberOfScoredGoals()<3){
